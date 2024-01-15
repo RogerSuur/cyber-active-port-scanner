@@ -3,8 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
+	"net"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func main()  {
@@ -28,7 +30,8 @@ func main()  {
 			fmt.Println("  --help           Show this message and exit.")
 		}
 
-		fmt.Printf("Debug: Port range input is '%s'\n", *portRange)
+	fmt.Printf("Debug: Port range input is '%s'\n", *portRange)
+	fmt.Println("Host:", *tcpHost)
 
 		
 	startPort, endPort, err := findRange(*portRange)
@@ -39,9 +42,9 @@ func main()  {
 		
 	for port := startPort; port <= endPort; port++ {
         if scanType == "tcp" {
-            fmt.Printf("Scanning TCP port %d: %s\n", port, scanPort("tcp", strconv.Itoa(port)))
+            fmt.Printf("Scanning TCP port %d: %s\n", port, scanTcp(*tcpHost, strconv.Itoa(port)))
         } else  {
-            fmt.Printf("Scanning UDP port %d: %s\n", port, scanPort("udp", strconv.Itoa(port)))
+            fmt.Printf("Scanning UDP port %d: %s\n", port, scanUdp(*udpHost, port))
         }
     }
 }
@@ -70,6 +73,37 @@ func findRange(portRange string)(int, int, error) {
 	}
 }
 
-func scanPort(host string, port string) string {
-    return "open"
+func scanTcp(host string, port string) string {
+	address := fmt.Sprintf("%s:%s", host, port)
+	fmt.Println(address)
+	conn, err := net.DialTimeout("tcp", address, 1*time.Second)
+	if err != nil {
+	return "closed"
+	}
+	conn.Close()
+	return "open"
+}
+
+
+func scanUdp(host string, port int) string {
+	address := fmt.Sprintf("%s:%d", host, port)
+	conn, err := net.DialTimeout("udp", address, 1*time.Second)
+	if err != nil {
+		return "closed"
+	}
+	defer conn.Close()
+
+	_, err = conn.Write([]byte("hello"))
+	if err != nil {
+		return "closed"
+	}
+
+	buffer := make([]byte, 1024)
+	conn.SetReadDeadline(time.Now().Add(1 * time.Second))
+	_, err = conn.Read(buffer)
+	if e, ok := err.(net.Error); ok && e.Timeout() {
+		return "open/filtered"
+	}
+
+	return "closed"
 }

@@ -12,7 +12,7 @@ This is tool that gathers information from open source investigative methods.
 
 ## Commands
 
-### tinyscanner --help
+### go run main.go --help
 
 Usage: tinyscanner [OPTIONS] [HOST] [PORT]
 Options:
@@ -21,13 +21,22 @@ Options:
 -t TCP scan
 --help Show this message and exit.
 
-### tinyscanner -p 127.0.0.1 -t 80
+### go run main.go -t 127.0.0.1 -p 80
 
 Does port 80 show as open?
 
-### inyscanner -p 127.0.0.1 -u 80
+### go run main.go -t 127.0.0.1 -p 1604
 
-Does port 80 show as open?
+Does it show the following?
+Port 1604 is closed
+
+### go run main.go -t 10.53.224.5 -p 80-83
+
+Does it display this result?
+Port 80 is open
+Port 81 is open
+Port 82 is close
+Port 83 is open
 
 ## Audit questions:
 
