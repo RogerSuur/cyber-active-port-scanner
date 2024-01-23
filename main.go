@@ -30,8 +30,6 @@ func main()  {
 			fmt.Println("  --help           Show this message and exit.")
 		}
 
-	fmt.Printf("Debug: Port range input is '%s'\n", *portRange)
-	fmt.Println("Host:", *tcpHost)
 
 		
 	startPort, endPort, err := findRange(*portRange)
@@ -75,7 +73,6 @@ func findRange(portRange string)(int, int, error) {
 
 func scanTcp(host string, port string) string {
 	address := fmt.Sprintf("%s:%s", host, port)
-	fmt.Println(address)
 	conn, err := net.DialTimeout("tcp", address, 1*time.Second)
 	if err != nil {
 	return "closed"

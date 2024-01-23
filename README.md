@@ -25,6 +25,10 @@ Options:
 
 Does port 80 show as open?
 
+### Run a local server using udp protocol with the port 5500 and run tinyscanner -t 127.0.0.1 -p 5500
+
+Does port 80 show as open?
+
 ### go run main.go -t 127.0.0.1 -p 1604
 
 Does it show the following?
@@ -44,9 +48,14 @@ https://github.com/01-edu/public/tree/master/subjects/cybersecurity/passive/audi
 
 ### Explain clearly what does port mean?
 
+Ports are virtual places within an operating system where network connections start and end. They help computers sort the network traffic they receive.
+
 ### Why the ports scanning is important in the pentesting?
+
+The overarching goal of port scanning is to find ports, hosts, and server locations vulnerable to an attack and to diagnose those points' security levels. Malicious hackers also use the same process to identify port security weaknesses that they can use to compromise a network's security and gain access
 
 ### How this program works?
 
-This program reads commandline arguments (like -fn, -u, -ip) and provided argument for which we need to investigate on.
-For full name it does web scraping from www.whitepages.be, ip address it uses http://ip-api.com and username it checks if that platform userpage exists or not.
+This program reads commandline arguments (like -t, -u, -p) and provided port we need to scan.
+The ports are scanned using udp or tcp scan. Tcp scan gives close result if no tcp connection or handshake is
+established between the server. Udp tries to provoke answer from the server by sending a small package and if it doesnt receive anything it assumes the server is closed.
