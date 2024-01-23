@@ -85,28 +85,28 @@ func scanTcp(host string, port string) string {
 }
 
 
-func scanUdp(host *string, port int) string {
-	address := fmt.Sprintf("%s:%d", host, port)
-	conn, err := net.DialTimeout("udp", address, 1*time.Second)
-	if err != nil {
-		return "closed"
-	}
-	defer conn.Close()
+// func scanUdp(host *string, port int) string {
+// 	address := fmt.Sprintf("%s:%d", host, port)
+// 	conn, err := net.DialTimeout("udp", address, 1*time.Second)
+// 	if err != nil {
+// 		return "closed"
+// 	}
+// 	defer conn.Close()
 
-	_, err = conn.Write([]byte("hello"))
-	if err != nil {
-		return "closed"
-	}
+// 	_, err = conn.Write([]byte("hello"))
+// 	if err != nil {
+// 		return "closed"
+// 	}
 
-	buffer := make([]byte, 1024)
-	conn.SetReadDeadline(time.Now().Add(1 * time.Second))
-	_, err = conn.Read(buffer)
-	if e, ok := err.(net.Error); ok && e.Timeout() {
-		return "open/filtered"
-	}
+// 	buffer := make([]byte, 1024)
+// 	conn.SetReadDeadline(time.Now().Add(1 * time.Second))
+// 	_, err = conn.Read(buffer)
+// 	if e, ok := err.(net.Error); ok && e.Timeout() {
+// 		return "open/filtered"
+// 	}
 
-	return "closed"
-}
+// 	return "closed"
+// }
 
 func scanUdpWithNmapWrapper(host string, port int) (string) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)

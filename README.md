@@ -4,6 +4,7 @@ This is tool that gathers information from open source investigative methods.
 
 ## Setup
 
+For udp scan:
 Install nmap binary
 
 1. sudo apt-get install nmap
@@ -39,6 +40,28 @@ Port 80 is open
 Port 81 is open
 Port 82 is close
 Port 83 is open
+
+### For udp scan
+
+Deploy a DNS server using bind:
+
+1. Install bind
+   sudo apt-get install bind9 bind9utils bind9-doc
+2. Configure bind
+   sudo gedit /etc/bind/named.conf.options
+   add:
+   options {
+   listen-on port 53 { 127.0.0.1; 192.168.0.0/24; };
+   listen-on-v6 port 53 { ::1; };
+   directory "/var/cache/bind";
+   allow-query { localhost; 192.168.0.0/24; };
+   }
+3. start Bind
+   sudo systemctl start bind9
+4. Test bind locally
+   dig @localhost example.com
+
+5. run command sudo fo run main.go -u 127.0.0.1 -p 53
 
 ## Audit questions:
 
