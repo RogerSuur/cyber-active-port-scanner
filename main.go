@@ -1,12 +1,15 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"net"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/Ullaakut/nmap"
 )
 
 func main()  {
@@ -42,7 +45,7 @@ func main()  {
         if scanType == "tcp" {
             fmt.Printf("Scanning TCP port %d: %s\n", port, scanTcp(*tcpHost, strconv.Itoa(port)))
         } else  {
-            fmt.Printf("Scanning UDP port %d: %s\n", port, scanUdp(*udpHost, port))
+            fmt.Printf("Scanning UDP port %d: %s\n", port, scanUdpWithNmapWrapper(*udpHost, port))
         }
     }
 }
@@ -82,7 +85,7 @@ func scanTcp(host string, port string) string {
 }
 
 
-func scanUdp(host string, port int) string {
+func scanUdp(host *string, port int) string {
 	address := fmt.Sprintf("%s:%d", host, port)
 	conn, err := net.DialTimeout("udp", address, 1*time.Second)
 	if err != nil {
@@ -102,5 +105,42 @@ func scanUdp(host string, port int) string {
 		return "open/filtered"
 	}
 
+	return "closed"
+}
+
+func scanUdpWithNmapWrapper(host string, port int) (string) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+
+	scanner, err := nmap.NewScanner(
+		nmap.WithTargets(host),
+		nmap.WithPorts(fmt.Sprintf("%d", port)),
+		nmap.WithUDPScan(),
+		nmap.WithContext(ctx),
+		nmap.WithVerbosity(2),
+	)
+	if err != nil {	
+		fmt.Println("error scanning")
+		fmt.Println(err)
+		return "closed"
+	}
+
+	result, warnings, err := scanner.Run()
+	if err != nil {
+		fmt.Println("error running scanner")
+		fmt.Println(err)
+	}
+
+	if warnings != nil {
+		fmt.Println("Warnings:", warnings)
+	}
+
+	for _, host := range result.Hosts {
+		for _, port := range host.Ports {
+			if port.State.State == "open" {
+				return "open"
+			}
+		}
+	}
 	return "closed"
 }

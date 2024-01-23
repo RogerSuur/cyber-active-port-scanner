@@ -4,11 +4,9 @@ This is tool that gathers information from open source investigative methods.
 
 ## Setup
 
-1. Check if python3 is installed
-   python3 --version
-   If NOT(ubuntu):
-   sudo apt update
-   sudo apt install python3
+Install nmap binary
+
+1. sudo apt-get install nmap
 
 ## Commands
 
